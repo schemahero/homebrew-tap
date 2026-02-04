@@ -1,0 +1,141 @@
+name: Update Formula
+
+on:
+  repository_dispatch:
+    types: [release]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to update to (e.g., 0.23.0)'
+        required: true
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get version
+        id: version
+        run: |
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            echo "version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          else
+            echo "version=${{ github.event.client_payload.version }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update schemahero formula
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          
+          # Download and get SHA256 for each platform
+          SHA_DARWIN_AMD64=$(curl -sL "https://github.com/schemahero/schemahero/releases/download/v${VERSION}/schemahero_darwin_amd64.tar.gz" | shasum -a 256 | cut -d' ' -f1)
+          SHA_DARWIN_ARM64=$(curl -sL "https://github.com/schemahero/schemahero/releases/download/v${VERSION}/schemahero_darwin_arm64.tar.gz" | shasum -a 256 | cut -d' ' -f1)
+          SHA_LINUX_AMD64=$(curl -sL "https://github.com/schemahero/schemahero/releases/download/v${VERSION}/schemahero_linux_amd64.tar.gz" | shasum -a 256 | cut -d' ' -f1)
+          SHA_LINUX_ARM64=$(curl -sL "https://github.com/schemahero/schemahero/releases/download/v${VERSION}/schemahero_linux_arm64.tar.gz" | shasum -a 256 | cut -d' ' -f1)
+          
+          cat > Formula/schemahero.rb << EOF
+          # typed: false
+          # frozen_string_literal: true
+
+          class Schemahero < Formula
+            desc "Kubernetes-native database schema management"
+            homepage "https://schemahero.io"
+            version "${VERSION}"
+            license "Apache-2.0"
+
+            on_macos do
+              on_intel do
+                url "https://github.com/schemahero/schemahero/releases/download/v#{version}/schemahero_darwin_amd64.tar.gz"
+                sha256 "${SHA_DARWIN_AMD64}"
+              end
+              on_arm do
+                url "https://github.com/schemahero/schemahero/releases/download/v#{version}/schemahero_darwin_arm64.tar.gz"
+                sha256 "${SHA_DARWIN_ARM64}"
+              end
+            end
+
+            on_linux do
+              on_intel do
+                url "https://github.com/schemahero/schemahero/releases/download/v#{version}/schemahero_linux_amd64.tar.gz"
+                sha256 "${SHA_LINUX_AMD64}"
+              end
+              on_arm do
+                url "https://github.com/schemahero/schemahero/releases/download/v#{version}/schemahero_linux_arm64.tar.gz"
+                sha256 "${SHA_LINUX_ARM64}"
+              end
+            end
+
+            def install
+              bin.install "schemahero"
+            end
+
+            test do
+              system "#{bin}/schemahero", "version"
+            end
+          end
+          EOF
+
+      - name: Update kubectl-schemahero formula
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          
+          SHA_DARWIN_AMD64=$(curl -sL "https://github.com/schemahero/schemahero/releases/download/v${VERSION}/kubectl-schemahero_darwin_amd64.tar.gz" | shasum -a 256 | cut -d' ' -f1)
+          SHA_DARWIN_ARM64=$(curl -sL "https://github.com/schemahero/schemahero/releases/download/v${VERSION}/kubectl-schemahero_darwin_arm64.tar.gz" | shasum -a 256 | cut -d' ' -f1)
+          SHA_LINUX_AMD64=$(curl -sL "https://github.com/schemahero/schemahero/releases/download/v${VERSION}/kubectl-schemahero_linux_amd64.tar.gz" | shasum -a 256 | cut -d' ' -f1)
+          SHA_LINUX_ARM64=$(curl -sL "https://github.com/schemahero/schemahero/releases/download/v${VERSION}/kubectl-schemahero_linux_arm64.tar.gz" | shasum -a 256 | cut -d' ' -f1)
+          
+          cat > Formula/kubectl-schemahero.rb << EOF
+          # typed: false
+          # frozen_string_literal: true
+
+          class KubectlSchemahero < Formula
+            desc "Kubectl plugin for SchemaHero database schema management"
+            homepage "https://schemahero.io"
+            version "${VERSION}"
+            license "Apache-2.0"
+
+            on_macos do
+              on_intel do
+                url "https://github.com/schemahero/schemahero/releases/download/v#{version}/kubectl-schemahero_darwin_amd64.tar.gz"
+                sha256 "${SHA_DARWIN_AMD64}"
+              end
+              on_arm do
+                url "https://github.com/schemahero/schemahero/releases/download/v#{version}/kubectl-schemahero_darwin_arm64.tar.gz"
+                sha256 "${SHA_DARWIN_ARM64}"
+              end
+            end
+
+            on_linux do
+              on_intel do
+                url "https://github.com/schemahero/schemahero/releases/download/v#{version}/kubectl-schemahero_linux_amd64.tar.gz"
+                sha256 "${SHA_LINUX_AMD64}"
+              end
+              on_arm do
+                url "https://github.com/schemahero/schemahero/releases/download/v#{version}/kubectl-schemahero_linux_arm64.tar.gz"
+                sha256 "${SHA_LINUX_ARM64}"
+              end
+            end
+
+            def install
+              bin.install "kubectl-schemahero"
+            end
+
+            test do
+              system "#{bin}/kubectl-schemahero", "version"
+            end
+          end
+          EOF
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "Update formulas to v${{ steps.version.outputs.version }}"
+          title: "Update formulas to v${{ steps.version.outputs.version }}"
+          body: |
+            Automated formula update for SchemaHero v${{ steps.version.outputs.version }}
+            
+            Release: https://github.com/schemahero/schemahero/releases/tag/v${{ steps.version.outputs.version }}
+          branch: update-v${{ steps.version.outputs.version }}
+          delete-branch: true
