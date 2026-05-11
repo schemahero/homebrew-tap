@@ -4,28 +4,28 @@
 class Schemahero < Formula
   desc "Kubernetes-native database schema management"
   homepage "https://schemahero.io"
-  version "0.23.2"
+  version "0.25.0"
   license "Apache-2.0"
 
   on_macos do
     on_intel do
       url "https://github.com/schemahero/schemahero/releases/download/v#{version}/schemahero_darwin_amd64.tar.gz"
-      sha256 "cc38fa0b452e8b2600bbcb08e0364a702086f31e8e37c4adabcc9fb6e1dd2f5d"
+      sha256 "459cf46c8678034bd839262b4150877c6f3340c23a5f2dd05ccc58276f5555a2"
     end
     on_arm do
       url "https://github.com/schemahero/schemahero/releases/download/v#{version}/schemahero_darwin_arm64.tar.gz"
-      sha256 "8501577dd46b06f0a3441f4336c8405d99eea951ab9848f848ff6f82437c5bb6"
+      sha256 "6f03508d0c2132a8c92de9c488fba096f2f3865d8ad2cfd4b6a2144ab36b474b"
     end
   end
 
   on_linux do
     on_intel do
       url "https://github.com/schemahero/schemahero/releases/download/v#{version}/schemahero_linux_amd64.tar.gz"
-      sha256 "f7309286b545acfcd25d8c7a9280199e3b34d7fd991f7fac1833a0ad22d797f9"
+      sha256 "ab714a95ac706ce305a6532bbafcf3c6e730835d03b4fe338ab063b3785de325"
     end
     on_arm do
       url "https://github.com/schemahero/schemahero/releases/download/v#{version}/schemahero_linux_arm64.tar.gz"
-      sha256 "26858d94832f6308b70d74bd96169a311d766e44b73c8b760df698c7a252e6ee"
+      sha256 "cbec2206c478c7dbb35b72c019e63d63c5b49c1043338e4920250a1c4ce3f95f"
     end
   end
 
