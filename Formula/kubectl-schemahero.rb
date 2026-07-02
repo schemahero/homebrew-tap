@@ -4,28 +4,28 @@
 class KubectlSchemahero < Formula
   desc "Kubectl plugin for SchemaHero database schema management"
   homepage "https://schemahero.io"
-  version "0.23.2"
+  version "0.25.1"
   license "Apache-2.0"
 
   on_macos do
     on_intel do
       url "https://github.com/schemahero/schemahero/releases/download/v#{version}/kubectl-schemahero_darwin_amd64.tar.gz"
-      sha256 "f6bb08c02a6bcc79f7888f903a6eab239f1c78a13b5018579acca48722aa715c"
+      sha256 "dde54f770edaba7cb572c39f684097b55cefb5029774a079a28e79245c23286b"
     end
     on_arm do
       url "https://github.com/schemahero/schemahero/releases/download/v#{version}/kubectl-schemahero_darwin_arm64.tar.gz"
-      sha256 "b7547e83bc401d38fa2e6c8d07c995423eae81bad20e77a9c18d3aefc32af6b8"
+      sha256 "8f04616b8ba25871dcb226328f1922b23dd689242783ffb9796a22931c68e5ec"
     end
   end
 
   on_linux do
     on_intel do
       url "https://github.com/schemahero/schemahero/releases/download/v#{version}/kubectl-schemahero_linux_amd64.tar.gz"
-      sha256 "b83a247d544711b81d3e5b1bc6c7b24d33b2c9b1fa381bb118bf853870beef2f"
+      sha256 "2751d6619375b809c68bce23297182cf8e3b330fc81c6a6e5e653267f9619e86"
     end
     on_arm do
       url "https://github.com/schemahero/schemahero/releases/download/v#{version}/kubectl-schemahero_linux_arm64.tar.gz"
-      sha256 "c31acc75a4edbc334fdedb74acde387fc0ebd40d7ad59b91bef1b538eedc49a3"
+      sha256 "32b4c45f2d41ccff74d51d539fca70e7bccf8cb4535b16dfe3cfa466bcb0ee52"
     end
   end
 
